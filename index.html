@@ -3,42 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
-    <title>T-PLINK BILLING</title>
-    <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/93/93158.png">
+    <title>T-PLINK ONLINE</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <style>
-        :root { --primary: #4f46e5; --success: #22c55e; --bg: #69cef9; --text: #1e293b; }
+        :root { --primary: #4f46e5; --bg: #69cef9; --text: #1e293b; --success: #22c55e; }
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); padding: 15px; margin: 0; }
         .container { max-width: 600px; margin: auto; }
         .app-header { text-align: center; margin: 20px 0; color: white; }
-        
-        .form-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        .form-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .input-wrapper { position: relative; margin-bottom: 15px; }
         .input-wrapper span { position: absolute; left: 12px; top: 14px; color: #94a3b8; pointer-events: none; }
-        
         input, select { width: 100%; padding: 14px 12px 14px 45px; border: 1.5px solid #cbd5e1; border-radius: 12px; font-size: 16px; box-sizing: border-box; outline: none; }
-        
         .btn-group { display: grid; gap: 10px; margin-top: 10px; }
-        button { width: 100%; border: none; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; padding: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
-        
+        button { width: 100%; border: none; border-radius: 12px; font-weight: bold; font-size: 16px; cursor: pointer; padding: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
         .btn-simpan { background: var(--primary); color: white; }
-        .btn-download { background: var(--success); color: white; }
-        button:active { transform: scale(0.95); }
-
+        .btn-download { background: var(--success); color: white; font-size: 14px; padding: 10px; }
+        .status-online { font-size: 12px; text-align: center; color: white; margin-top: 5px; opacity: 0.8; }
         .month-section { margin-top: 25px; }
         .month-header { background: white; padding: 15px; border-radius: 12px 12px 0 0; font-weight: bold; display: flex; justify-content: space-between; border-bottom: 2px solid #f1f5f9; }
-        .table-container { background: white; border-radius: 0 0 12px 12px; overflow: hidden; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .table-container { background: white; border-radius: 0 0 12px 12px; overflow: hidden; margin-bottom: 15px; }
         table { width: 100%; border-collapse: collapse; }
-        td { padding: 15px; border-top: 1px solid #f1f5f9; font-size: 14px; }
-        .btn-hapus { background: #fee2e2; color: #ef4444; padding: 6px 10px; border-radius: 8px; font-size: 12px; width: auto; }
+        td { padding: 15px; border-top: 1px solid #f1f5f9; font-size: 15px; }
+        .btn-hapus { background: #fee2e2; color: #ef4444; padding: 8px; border-radius: 8px; width: auto; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="app-header">
-        <span class="material-symbols-rounded" style="font-size: 50px;">wifi</span>
-        <h1 style="margin:0">T-PLINK BILLING</h1>
+        <span class="material-symbols-rounded" style="font-size: 50px;">cloud_done</span>
+        <h1 style="margin:0">T-PLINK ONLINE</h1>
+        <div class="status-online" id="status">Menghubungkan ke Cloud...</div>
     </div>
 
     <div class="form-card">
@@ -50,7 +49,7 @@
             <span class="material-symbols-rounded">payments</span>
             <input type="number" id="nominal" placeholder="Nominal" inputmode="numeric">
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
             <select id="bulan">
                 <option value="Januari">Januari</option><option value="Februari">Februari</option>
                 <option value="Maret">Maret</option><option value="April">April</option>
@@ -61,13 +60,10 @@
             </select>
             <input type="number" id="tahun" value="2025">
         </div>
-        
         <div class="btn-group">
-            <button class="btn-simpan" onclick="tambahData()">
-                <span class="material-symbols-rounded">add_circle</span> SIMPAN DATA
-            </button>
+            <button class="btn-simpan" onclick="tambahData()">SIMPAN KE CLOUD</button>
             <button class="btn-download" onclick="downloadLaporan()">
-                <span class="material-symbols-rounded">download</span> DOWNLOAD EXCEL (CSV)
+                <span class="material-symbols-rounded">download</span> DOWNLOAD LAPORAN (CSV)
             </button>
         </div>
     </div>
@@ -76,20 +72,38 @@
 </div>
 
 <script>
-    function loadData() {
-        const saved = localStorage.getItem('TPLINK_DATA_PERMANEN');
-        return saved ? JSON.parse(saved) : [];
-    }
+    // --- KONFIGURASI FIREBASE MILIKMU ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyDIlY9uosBEFcUCf7YOfLI1wzZlWLbFg9o",
+      authDomain: "keuangan-6e95a.firebaseapp.com",
+      projectId: "keuangan-6e95a",
+      storageBucket: "keuangan-6e95a.firebasestorage.app",
+      messagingSenderId: "196659337945",
+      appId: "1:196659337945:web:4797adc668137e3e417cc8",
+      databaseURL: "https://keuangan-6e95a-default-rtdb.firebaseio.com" // Pastikan URL ini sesuai di dashboard Realtime Database kamu
+    };
 
-    let db = loadData();
+    // Inisialisasi Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    let localDb = [];
 
-    function render() {
+    // Mengambil Data Realtime dari Server
+    database.ref('pembayaran').on('value', (snapshot) => {
+        const data = snapshot.val();
+        localDb = data ? Object.entries(data).map(([id, val]) => ({ id, ...val })) : [];
+        render(localDb);
+        document.getElementById('status').innerText = "✅ Cloud Tersinkronisasi (Data Aman)";
+    });
+
+    function render(data) {
         const container = document.getElementById('daftar-laporan');
         container.innerHTML = "";
-        const bulanUnik = [...new Set(db.map(i => `${i.bulan} ${i.tahun}`))].reverse();
+        
+        const periodeUnik = [...new Set(data.map(i => `${i.bulan} ${i.tahun}`))].reverse();
 
-        bulanUnik.forEach(p => {
-            const itemBulan = db.filter(i => `${i.bulan} ${i.tahun}` === p);
+        periodeUnik.forEach(p => {
+            const itemBulan = data.filter(i => `${i.bulan} ${i.tahun}` === p);
             const total = itemBulan.reduce((s, i) => s + i.jumlah, 0);
 
             let html = `
@@ -98,9 +112,9 @@
                         <span>${p.toUpperCase()}</span>
                         <span style="color:var(--primary)">Rp ${total.toLocaleString('id-ID')}</span>
                     </div>
-                    <div class="table-container">
-                        <table>
+                    <div class="table-container"><table>
             `;
+
             itemBulan.forEach(i => {
                 html += `
                     <tr>
@@ -112,6 +126,7 @@
                     </tr>
                 `;
             });
+
             html += `</table></div></div>`;
             container.innerHTML += html;
         });
@@ -125,43 +140,30 @@
 
         if(!nama || !jumlah) return alert("Isi nama dan nominal!");
 
-        db.push({ id: Date.now().toString(), nama, jumlah, bulan, tahun });
-        localStorage.setItem('TPLINK_DATA_PERMANEN', JSON.stringify(db));
-        
-        document.getElementById('nama').value = "";
-        document.getElementById('nominal').value = "";
-        render();
+        // Kirim data ke Google Cloud
+        database.ref('pembayaran').push({ nama, jumlah, bulan, tahun })
+        .then(() => {
+            document.getElementById('nama').value = "";
+            document.getElementById('nominal').value = "";
+        })
+        .catch(err => alert("Gagal Simpan: " + err.message));
     }
 
     function hapus(id) {
-        if(confirm("Hapus data?")) {
-            db = db.filter(i => i.id !== id);
-            localStorage.setItem('TPLINK_DATA_PERMANEN', JSON.stringify(db));
-            render();
+        if(confirm("Hapus data dari Cloud selamanya?")) {
+            database.ref('pembayaran/' + id).remove();
         }
     }
 
-    // FUNGSI DOWNLOAD FILE CSV
     function downloadLaporan() {
-        if (db.length === 0) return alert("Belum ada data untuk diunduh!");
-
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Nama Pelanggan,Bulan,Tahun,Nominal\n"; // Judul Kolom
-
-        db.forEach(item => {
-            csvContent += `${item.nama},${item.bulan},${item.tahun},${item.jumlah}\n`;
-        });
-
-        const encodedUri = encodeURI(csvContent);
+        if (localDb.length === 0) return alert("Tidak ada data!");
+        let csv = "Nama,Bulan,Tahun,Nominal\n";
+        localDb.forEach(i => { csv += `${i.nama},${i.bulan},${i.tahun},${i.jumlah}\n`; });
         const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "Laporan_WiFi_TPLink.csv");
-        document.body.appendChild(link);
+        link.setAttribute("href", encodeURI("data:text/csv;charset=utf-8," + csv));
+        link.setAttribute("download", "Laporan_TPLink_Cloud.csv");
         link.click();
-        document.body.removeChild(link);
     }
-
-    render();
 </script>
 </body>
 </html>
