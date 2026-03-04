@@ -73,15 +73,17 @@
 
 <script>
     // --- KONFIGURASI FIREBASE MILIKMU ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyDIlY9uosBEFcUCf7YOfLI1wzZlWLbFg9o",
-      authDomain: "keuangan-6e95a.firebaseapp.com",
-      projectId: "keuangan-6e95a",
-      storageBucket: "keuangan-6e95a.firebasestorage.app",
-      messagingSenderId: "196659337945",
-      appId: "1:196659337945:web:4797adc668137e3e417cc8",
-      databaseURL: "https://keuangan-6e95a-default-rtdb.firebaseio.com" // Pastikan URL ini sesuai di dashboard Realtime Database kamu
-    };
+   const firebaseConfig = {
+   apiKey: "AIzaSyDIlY9uosBEFcUCf7YOfLI1wzZlWLbFg9o",
+   authDomain: "keuangan-6e95a.firebaseapp.com",
+   projectId: "keuangan-6e95a",
+   storageBucket: "keuangan-6e95a.firebasestorage.app",
+   messagingSenderId: "196659337945",
+   appId: "1:196659337945:web:4797adc668137e3e417cc8",
+   measurementId: "G-029YV4PJC8",
+   // PERBAIKAN DI SINI: Tambahkan '.asia-southeast1' sebelum '.firebasestabase.app'
+   databaseURL: "https://keuangan-6e95a-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
 
     // Inisialisasi Firebase
     firebase.initializeApp(firebaseConfig);
@@ -167,3 +169,4 @@
 </script>
 </body>
 </html>
+
