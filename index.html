@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
     <title>WiFi Billing - T-plink</title>
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/93/93158.png">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
@@ -14,17 +14,41 @@
             --text: #1e293b;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); padding: 20px; }
-        .container { max-width: 1000px; margin: auto; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--bg); 
+            color: var(--text); 
+            padding: 15px;
+            margin: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-        /* Header dengan Ikon */
-        .app-header { text-align: center; margin-bottom: 30px; }
-        .app-header .logo-icon { font-size: 48px; color: var(--primary); }
+        .container { max-width: 900px; margin: auto; }
 
-        /* Form Card */
+        .app-header { text-align: center; margin-bottom: 20px; padding-top: 10px; }
+        .app-header .logo-icon { font-size: 50px; color: white; }
+        .app-header h1 { color: white; margin: 5px 0; font-size: 22px; }
+
         .form-card {
-            background: rgb(203, 249, 255); padding: 25px; border-radius: 20px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); margin-bottom: 30px;
+            background: white; 
+            padding: 20px; 
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+            margin-bottom: 25px;
+        }
+
+        .grid-inputs { 
+            display: flex;
+            flex-direction: column;
+            gap: 15px; 
+        }
+
+        /* Desktop View Grid */
+        @media (min-width: 768px) {
+            .grid-inputs { 
+                display: grid; 
+                grid-template-columns: 2fr 1fr 1fr 1fr; 
+            }
         }
 
         .input-wrapper {
@@ -37,47 +61,66 @@
             position: absolute;
             left: 12px;
             color: #94a3b8;
+            pointer-events: none; /* PENTING: Agar ikon tidak menghalangi klik/sentuhan */
+            z-index: 5;
         }
 
         input, select {
             width: 100%;
-            padding: 12px 12px 12px 45px; /* Spasi kiri untuk ikon */
-            border: 1.5px solid #e2e8f0;
+            padding: 14px 12px 14px 45px;
+            border: 1.5px solid #cbd5e1;
             border-radius: 12px;
             box-sizing: border-box;
-            font-size: 14px;
+            font-size: 16px; /* PENTING: Minimal 16px agar HP tidak auto-zoom/macet */
+            outline: none;
+            background-color: #fff;
+            appearance: none; /* Hilangkan style bawaan HP */
+            -webkit-appearance: none;
         }
 
-        .grid-inputs { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 15px; }
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
 
         button.btn-simpan {
-            background: var(--primary); color: white; border: none; padding: 14px;
-            border-radius: 12px; font-weight: 600; cursor: pointer; grid-column: span 4;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            transition: 0.3s;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
         }
-        button.btn-simpan:hover { background: #4338ca; }
 
-        /* Section & Table */
-        .month-section { margin-top: 30px; }
+        /* Tabel & Laporan */
+        .month-section { margin-top: 25px; }
         .month-header { 
-            background: white; padding: 15px 20px; 
-            border-radius: 15px; font-weight: bold; margin-bottom: 10px;
+            background: white; padding: 15px; 
+            border-radius: 12px; font-weight: bold; margin-bottom: 10px;
             display: flex; justify-content: space-between; align-items: center;
-            border-left: 5px solid var(--primary);
+            border-left: 6px solid var(--primary);
         }
 
-        .table-container { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8fafc; padding: 15px; text-align: left; font-size: 12px; color: #64748b; }
-        td { padding: 15px; border-top: 1px solid #f1f5f9; vertical-align: middle; }
+        .table-container { 
+            background: white; border-radius: 12px; 
+            overflow-x: auto; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+        }
 
-        .user-cell { display: flex; align-items: center; gap: 10px; }
-        .user-icon { background: #e0e7ff; color: var(--primary); padding: 8px; border-radius: 50%; font-size: 18px; }
+        table { width: 100%; border-collapse: collapse; min-width: 500px; }
+        th { background: #f8fafc; padding: 12px; text-align: left; font-size: 11px; color: #64748b; }
+        td { padding: 12px; border-top: 1px solid #f1f5f9; font-size: 14px; }
 
         .btn-hapus { 
             background: #fee2e2; color: var(--danger); border: none; padding: 8px; 
-            border-radius: 10px; cursor: pointer; display: flex; align-items: center;
+            border-radius: 10px; cursor: pointer;
         }
     </style>
 </head>
@@ -85,19 +128,19 @@
 
 <div class="container">
     <div class="app-header">
-        <span class="material-symbols-rounded logo-icon">wifi</span>
-        <h1>WiFi Billing Dashboard</h1>
+        <span class="material-symbols-rounded logo-icon">wifi_tethering</span>
+        <h1>T-plink Dashboard</h1>
     </div>
 
     <div class="form-card">
         <div class="grid-inputs">
             <div class="input-wrapper">
                 <span class="material-symbols-rounded">person</span>
-                <input type="text" id="nama" placeholder="Nama Pelanggan">
+                <input type="text" id="nama" placeholder="Nama Pelanggan" autocomplete="off">
             </div>
             <div class="input-wrapper">
                 <span class="material-symbols-rounded">payments</span>
-                <input type="number" id="nominal" placeholder="Nominal (Rp)">
+                <input type="number" id="nominal" placeholder="Nominal (Rp)" inputmode="numeric">
             </div>
             <div class="input-wrapper">
                 <span class="material-symbols-rounded">calendar_month</span>
@@ -118,10 +161,10 @@
             </div>
             <div class="input-wrapper">
                 <span class="material-symbols-rounded">event</span>
-                <input type="number" id="tahun" value="2025">
+                <input type="number" id="tahun" placeholder="Tahun">
             </div>
             <button class="btn-simpan" onclick="tambahData()">
-                <span class="material-symbols-rounded">add_circle</span> Simpan Pembayaran
+                <span class="material-symbols-rounded">add_circle</span> Simpan Data
             </button>
         </div>
     </div>
@@ -130,13 +173,13 @@
 </div>
 
 <script>
+    document.getElementById('tahun').value = new Date().getFullYear();
     let dbKeuangan = JSON.parse(localStorage.getItem('dataWiFiModern')) || [];
 
     function updateTampilan() {
         const container = document.getElementById('daftar-laporan');
         container.innerHTML = "";
-
-        const periodeUnik = [...new Set(dbKeuangan.map(item => `${item.bulan} ${item.tahun}`))];
+        const periodeUnik = [...new Set(dbKeuangan.map(item => `${item.bulan} ${item.tahun}`))].reverse();
 
         periodeUnik.forEach(periode => {
             const [namaBulan, namaTahun] = periode.split(" ");
@@ -145,20 +188,16 @@
 
             const section = document.createElement('div');
             section.className = 'month-section';
-            
             section.innerHTML = `
                 <div class="month-header">
-                    <div style="display:flex; align-items:center; gap:10px">
-                        <span class="material-symbols-rounded" style="color:var(--primary)">folder_open</span>
-                        <span>${periode}</span>
-                    </div>
+                    <span>📅 ${periode.toUpperCase()}</span>
                     <span style="color:var(--primary)">Rp ${totalPerBulan.toLocaleString('id-ID')}</span>
                 </div>
                 <div class="table-container">
                     <table>
                         <thead>
                             <tr>
-                                <th>Pelanggan</th>
+                                <th>Nama</th>
                                 <th>Nominal</th>
                                 <th style="text-align:center">Aksi</th>
                             </tr>
@@ -166,14 +205,9 @@
                         <tbody>
                             ${dataPeriode.map((item) => `
                                 <tr>
-                                    <td>
-                                        <div class="user-cell">
-                                            <span class="material-symbols-rounded user-icon">person</span>
-                                            <strong>${item.nama}</strong>
-                                        </div>
-                                    </td>
+                                    <td><strong>${item.nama}</strong></td>
                                     <td>Rp ${item.jumlah.toLocaleString('id-ID')}</td>
-                                    <td style="display:flex; justify-content:center">
+                                    <td style="text-align:center">
                                         <button class="btn-hapus" onclick="hapusData('${item.id}')">
                                             <span class="material-symbols-rounded">delete</span>
                                         </button>
@@ -190,15 +224,18 @@
 
     function tambahData() {
         const nama = document.getElementById('nama').value;
-        const jumlah = parseInt(document.getElementById('nominal').value);
+        const jumlahInput = document.getElementById('nominal').value;
+        const jumlah = parseInt(jumlahInput);
         const bulan = document.getElementById('bulan').value;
         const tahun = document.getElementById('tahun').value;
 
-        if(!nama || !jumlah || !tahun) return alert("Lengkapi data!");
+        if(!nama || !jumlahInput || !tahun) {
+            alert("Harap lengkapi semua data!");
+            return;
+        }
 
-        const id = Date.now().toString();
-        dbKeuangan.push({ id, nama, jumlah, bulan, tahun });
-        simpanKeStorage();
+        dbKeuangan.push({ id: Date.now().toString(), nama, jumlah, bulan, tahun });
+        localStorage.setItem('dataWiFiModern', JSON.stringify(dbKeuangan));
         updateTampilan();
         
         document.getElementById('nama').value = "";
@@ -206,19 +243,14 @@
     }
 
     function hapusData(id) {
-        if(confirm("Hapus data pelanggan ini?")) {
+        if(confirm("Hapus data ini?")) {
             dbKeuangan = dbKeuangan.filter(item => item.id !== id);
-            simpanKeStorage();
+            localStorage.setItem('dataWiFiModern', JSON.stringify(dbKeuangan));
             updateTampilan();
         }
     }
 
-    function simpanKeStorage() {
-        localStorage.setItem('dataWiFiModern', JSON.stringify(dbKeuangan));
-    }
-
     updateTampilan();
 </script>
-
 </body>
 </html>
